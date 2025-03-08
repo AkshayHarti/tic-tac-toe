@@ -1,7 +1,14 @@
-version: '3.7'
 services:
   web:
+    container_name: web
+    image: web
     ports:
-      - '3002:3002'
+      - '8080:80'
     build:
+      dockerfile: ./Dockerfile
       context: .
+    healthcheck:
+      test: ['CMD', 'sh', './healthcheck.sh']
+      interval: 5s
+      timeout: 2s
+      retries: 3

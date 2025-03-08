@@ -1,19 +1,24 @@
-FROM node:22.11.0-alpine
+FROM node:22-alpine AS base
 
 WORKDIR /app
 
+FROM base AS build
 RUN npm install -g pnpm
 
-run npm install -g serve
+COPY . /app/
 
-COPY . .
-
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 RUN pnpm run build
 
-EXPOSE 3002
+FROM nginx:1.27.4-alpine-slim AS final-stage
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy the healthcheck script
+COPY healthcheck.sh /healthcheck.sh
+RUN chmod +x /healthcheck.sh
+
+EXPOSE 80
 
 # Command to run the application
-CMD ["serve", "-p", "3002", "-s", "dist"]
-
+CMD ["nginx", "-g", "daemon off;"]
