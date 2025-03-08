@@ -1,12 +1,29 @@
 services:
-  web:
-    container_name: web
-    image: web
+  dev:
+    container_name: dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    volumes:
+      - .:/app # Bind mount for real-time changes
+      - /app/node_modules # Prevent overwriting container node_modules
+    ports:
+      - '5173:5173' # Adjust based on your framework (Vite uses 5173, Next.js uses 3000)
+    command: sh -c "pnpm install && pnpm run dev"
+    environment:
+      - NODE_ENV=development
+
+  prod:
+    container_name: prod
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - '8080:80'
-    build:
-      dockerfile: ./Dockerfile
-      context: .
+    volumes:
+      - .:/app
+      - /app/node_modules
     healthcheck:
       test: ['CMD', 'sh', './healthcheck.sh']
       interval: 5s
