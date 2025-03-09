@@ -20,18 +20,33 @@ export const Board = () => {
     setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
   }
 
+  const boardText = winner ? `${winner} wins!` : `${currentPlayer}'s turn`
+
   return (
-    <main className='grid gap-2 grid-cols-3 grid-rows-3'>
+    <main>
       <section className='col-span-3 text-3xl font-bold text-center'>
-        {winner ? `${winner} wins!` : `${currentPlayer}'s turn`}
+        {boardText}
       </section>
-      {board.map((value, index) => {
-        return winner && value === '' ? (
-          <DisabledCell />
-        ) : (
-          <Cell key={index} value={value} onClick={() => handleClick(index)} />
-        )
-      })}
+      <br />
+      <br />
+      <section
+        data-testid='board'
+        className='grid gap-2 grid-cols-3 grid-rows-3'
+      >
+        {board.map((value, index) => {
+          return winner && value === '' ? (
+            <DisabledCell />
+          ) : (
+            <Cell
+              key={index}
+              value={value}
+              onClick={() => handleClick(index)}
+            />
+          )
+        })}
+      </section>
+      <br />
+      <br />
       <button
         className='col-span-3 text-3xl font-bold text-center'
         onClick={() => {
